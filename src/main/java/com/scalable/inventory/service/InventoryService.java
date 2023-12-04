@@ -36,11 +36,11 @@ public class InventoryService {
     }
 
 
-    public void orderItem(String itemName, long amount) throws Exception{
+    public void orderItem(String itemName, long amount) throws ItemNotFoundException{
         Inventory item = createInventoryRepository.findByItemName(itemName).orElse(null);
 
         if (item != null) {
-            item.setStock(item.getStock() - 1);
+            item.setStock(item.getStock() - amount);
             createInventoryRepository.save(item);
         } else {
             throw new ItemNotFoundException("Item: " + itemName + " not found");
