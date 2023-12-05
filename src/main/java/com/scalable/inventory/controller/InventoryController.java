@@ -2,6 +2,12 @@ package com.scalable.inventory.controller;
 import com.scalable.inventory.exception.ItemNotFoundException;
 import com.scalable.inventory.model.Inventory;
 import com.scalable.inventory.service.InventoryService;
+
+import io.micrometer.core.instrument.MeterRegistry;
+
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +19,22 @@ public class InventoryController {
     @Autowired
     InventoryService inventoryService;
 
+    private final MeterRegistry registry;
+
+    public InventoryController(MeterRegistry registry) {
+        this.registry = registry;
+    }
+
+    private final Logger LOG = LoggerFactory.getLogger(InventoryController.class);
+
     @PostMapping("/create-default/{itemName}")
     public ResponseEntity<String> createNewDefaultPayment(@PathVariable String itemName)
     {
         inventoryService.createDefaultItem(itemName);
+
+        registry.counter("stockItem.total", "username", itemName).increment();
+        LOG.info("Adding stock " + itemName + " to the inventory");
+
         return ResponseEntity.ok().build();
     }
 
