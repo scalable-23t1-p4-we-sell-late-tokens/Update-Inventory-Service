@@ -9,6 +9,6 @@ import com.scalable.inventory.model.Inventory;
 import java.util.Optional;
 
 @Repository
-public interface InventoryRepository extends CrudRepository<Inventory, String> {
+public interface InventoryRepository extends CrudRepository<Inventory, Long> {
     Optional<Inventory> findByItemName(String itemName);
 }
