@@ -15,6 +15,4 @@ import lombok.ToString;
 @ToString(includeFieldNames = true)
 public class ProgressJSON extends BaseJSON {
     private String message_flag;
-
-
 }
