@@ -22,6 +22,7 @@ public class TimeOutException extends RuntimeException {
     public TimeOutException(RollbackJSON parameters) {
         super();
         this.username = parameters.getUsername();
+        this.order_id = parameters.getOrder_id();
         this.item_name = parameters.getItem_name();
         this.amount = parameters.getAmount();
         this.message_response = parameters.getMessage_response();

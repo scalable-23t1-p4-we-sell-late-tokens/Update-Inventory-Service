@@ -66,6 +66,7 @@ public class RedisProgressChannel implements MessageListener {
                     forceRollbackException.getAmount());
             JSONBuilder response = new JSONBuilder();
             response.addField("username", forceRollbackException.getUsername())
+                    .addField("order_id", forceRollbackException.getOrder_id())
                     .addField("amount", forceRollbackException.getAmount())
                     .addField("message_response", forceRollbackException.getMessage_response());
             try {
@@ -83,6 +84,7 @@ public class RedisProgressChannel implements MessageListener {
                     insufficientFundException.getAmount());
             JSONBuilder response = new JSONBuilder();
             response.addField("username", insufficientFundException.getUsername())
+                    .addField("order_id", insufficientFundException.getOrder_id())
                     .addField("amount", insufficientFundException.getAmount())
                     .addField("message_response", insufficientFundException.getMessage_response());
             try {
@@ -104,6 +106,7 @@ public class RedisProgressChannel implements MessageListener {
                         timeOutException.getAmount());
                 JSONBuilder response = new JSONBuilder();
                 response.addField("username", timeOutException.getUsername())
+                    .addField("order_id", timeOutException.getOrder_id())
                     .addField("amount", timeOutException.getAmount())
                     .addField("message_response", timeOutException.getMessage_response());
                 try {
@@ -123,6 +126,7 @@ public class RedisProgressChannel implements MessageListener {
                         unknownException.getAmount());
                 JSONBuilder response = new JSONBuilder();
                 response.addField("username", unknownException.getUsername())
+                    .addField("order_id", unknownException.getOrder_id())
                     .addField("amount", unknownException.getAmount())
                     .addField("message_response", unknownException.getMessage_response());
                 try {
