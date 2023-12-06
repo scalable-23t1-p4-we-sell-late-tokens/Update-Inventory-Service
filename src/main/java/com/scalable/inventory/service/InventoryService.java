@@ -1,9 +1,11 @@
 package com.scalable.inventory.service;
 
+import com.scalable.inventory.exception.ItemNotFoundException;
+import com.scalable.inventory.service.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.scalable.inventory.exception.ItemNotFoundException;
+import com.scalable.inventory.exception.ItemAlreadyExists;
 import com.scalable.inventory.model.Inventory;
 import com.scalable.inventory.repository.InventoryRepository;
 
@@ -15,19 +17,27 @@ public class InventoryService {
     @Autowired
     private InventoryRepository createInventoryRepository;
 
-    public void createDefaultItem(String itemName) {
+    private RedisService redisService;
+
+    public void createDefaultItem(String itemName) throws ItemAlreadyExists{
         Optional<Inventory> entity = createInventoryRepository.findByItemName(itemName);
         if(!entity.isPresent()) {
             Inventory newPayment = new Inventory(itemName);
             createInventoryRepository.save(newPayment);
         }
+        else {
+            throw new ItemAlreadyExists();
+        }
     }
 
-    public void createNewItem(String itemName, long stock) {
+    public void createNewItem(String itemName, long stock) throws ItemAlreadyExists{
         Optional<Inventory> entity = createInventoryRepository.findByItemName(itemName);
         if(!entity.isPresent()) {
             Inventory newPayment = new Inventory(itemName, stock);
             createInventoryRepository.save(newPayment);
+        }
+        else {
+            throw new ItemAlreadyExists();
         }
     }
 
@@ -36,7 +46,7 @@ public class InventoryService {
     }
 
 
-    public void orderItem(String itemName, long amount) throws ItemNotFoundException{
+    public void orderItem(String itemName, long amount) throws ItemNotFoundException {
         Inventory item = createInventoryRepository.findByItemName(itemName).orElse(null);
 
         if (item != null) {
@@ -45,6 +55,25 @@ public class InventoryService {
         } else {
             throw new ItemNotFoundException("Item: " + itemName + " not found");
         }
+    }
+
+    public void rollback(String itemName, long amount) throws ItemNotFoundException {
+        Inventory item = createInventoryRepository.findByItemName(itemName).orElse(null);
+
+        if (item != null) {
+            item.setStock(item.getStock() + amount);
+            createInventoryRepository.save(item);
+        } else {
+            throw new ItemNotFoundException("Item: " + itemName + " not found");
+        }
+    }
+
+    public void sendRollbackSignal(String jsonString) {
+        redisService.sendMessageToChannel("InventoryToPayment", jsonString);
+    }
+
+    public void sendProgressSignal(String jsonString) {
+        redisService.sendMessageToChannel("InventoryToDelivery", jsonString);
     }
 
 }

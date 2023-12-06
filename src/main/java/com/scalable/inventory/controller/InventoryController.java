@@ -1,5 +1,5 @@
 package com.scalable.inventory.controller;
-import com.scalable.inventory.exception.ItemNotFoundException;
+import com.scalable.inventory.exception.ItemAlreadyExists;
 import com.scalable.inventory.model.Inventory;
 import com.scalable.inventory.service.InventoryService;
 
@@ -50,7 +50,7 @@ public class InventoryController {
     {
         try {
             inventoryService.orderItem(itemName, amount);
-        } catch (ItemNotFoundException itemNotFoundException) {
+        } catch (ItemAlreadyExists itemNotFoundException) {
             return ResponseEntity.internalServerError().body("Item not found");
         } catch (Exception e) {
             System.out.println(e.getMessage());
