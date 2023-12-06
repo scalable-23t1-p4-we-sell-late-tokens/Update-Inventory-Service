@@ -31,6 +31,7 @@ public class RedisRollbackChannel implements MessageListener {
 
 
             String username = json.getUsername();
+            String orderID = json.getOrder_id();
             String itemName = json.getItem_name();
             long amount = json.getAmount();
             String messageResponse = json.getMessage_response();
@@ -40,6 +41,7 @@ public class RedisRollbackChannel implements MessageListener {
 
             JSONBuilder response = new JSONBuilder();
             response.addField("username", username)
+                    .addField("order_id", orderID)
                     .addField("amount", amount)
                     .addField("message_response", messageResponse);
 

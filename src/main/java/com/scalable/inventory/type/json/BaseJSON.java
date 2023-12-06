@@ -11,4 +11,7 @@ import lombok.*;
 @ToString(includeFieldNames = true)
 abstract class BaseJSON {
     private String username;
+    private String order_id;
+    private String item_name;
+    private long amount;
 }

@@ -9,6 +9,7 @@ import lombok.Setter;
 @Setter
 public class TimeOutException extends RuntimeException {
     private String username;
+    private String order_id;
     private String item_name;
     private long amount;
     private String message_response;

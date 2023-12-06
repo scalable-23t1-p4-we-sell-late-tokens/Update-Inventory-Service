@@ -14,8 +14,5 @@ import lombok.ToString;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @ToString(includeFieldNames = true)
 public class RollbackJSON extends BaseJSON {
-    private String username;
-    private String item_name;
-    private long amount;
     private String message_response;
 }
