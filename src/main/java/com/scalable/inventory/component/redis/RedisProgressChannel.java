@@ -12,6 +12,7 @@ import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
 
+// TODO: Figure out and implement the timeout mechanism
 @Component
 public class RedisProgressChannel implements MessageListener {
 
