@@ -30,7 +30,6 @@ public class JSONBuilder {
             ObjectMapper objectMapper = new ObjectMapper();
             return objectMapper.readValue(buildAsString(), messageType);
         } catch (Exception e) {
-            // Handle exception (e.g., JSON deserialization error)
             e.printStackTrace();
             return null;
         }

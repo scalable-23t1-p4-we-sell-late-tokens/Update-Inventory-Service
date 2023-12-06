@@ -1,6 +1,7 @@
 package com.scalable.inventory.component.redis;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.scalable.inventory.exception.UnknownException;
 import com.scalable.inventory.service.InventoryService;
 import com.scalable.inventory.type.json.JSONBuilder;
 import com.scalable.inventory.type.json.JSONMessageTypeFactory;
@@ -34,6 +35,7 @@ public class RedisRollbackChannel implements MessageListener {
             long amount = json.getAmount();
             String messageResponse = json.getMessage_response();
 
+            System.out.println("Beginning rollback process");
             inventoryService.rollback(itemName, amount);
 
             JSONBuilder response = new JSONBuilder();
@@ -42,10 +44,11 @@ public class RedisRollbackChannel implements MessageListener {
                     .addField("message_response", messageResponse);
 
             inventoryService.sendRollbackSignal(response.buildAsString());
+            System.out.println("Rollback complete");
 
 
-        } catch (Exception e) {
-            System.err.println("Error decoding JSON: " + e.getMessage());
+        } catch (UnknownException unknownException) {
+            System.err.println("Unknown Error Occurred: " + unknownException.getMessage());
         }
     }
 }

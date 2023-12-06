@@ -1,12 +1,29 @@
 package com.scalable.inventory.exception;
 
-public class TimeOutException extends RuntimeException {
+import com.scalable.inventory.type.json.RollbackJSON;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
+public class TimeOutException extends RuntimeException {
     private String username;
+    private String item_name;
     private long amount;
+    private String message_response;
+
 
     public TimeOutException() {
         super();
+    }
+
+    public TimeOutException(RollbackJSON parameters) {
+        super();
+        this.username = parameters.getUsername();
+        this.item_name = parameters.getItem_name();
+        this.amount = parameters.getAmount();
+        this.message_response = parameters.getMessage_response();
     }
 
     public TimeOutException(String message) {

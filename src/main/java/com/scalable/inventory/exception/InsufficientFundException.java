@@ -8,6 +8,7 @@ import lombok.Setter;
 @Setter
 public class InsufficientFundException extends RuntimeException {
     private String username;
+    private String item_name;
     private long amount;
     private String message_response;
 
@@ -18,6 +19,7 @@ public class InsufficientFundException extends RuntimeException {
     public InsufficientFundException(RollbackJSON parameters) {
         super();
         this.username = parameters.getUsername();
+        this.item_name = parameters.getItem_name();
         this.amount = parameters.getAmount();
         this.message_response = parameters.getMessage_response();
     }

@@ -1,6 +1,7 @@
 package com.scalable.inventory.service;
 
 import com.scalable.inventory.exception.ItemNotFoundException;
+import com.scalable.inventory.exception.UnknownException;
 import com.scalable.inventory.service.redis.RedisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ public class InventoryService {
     @Autowired
     private InventoryRepository createInventoryRepository;
 
+    @Autowired
     private RedisService redisService;
 
     public void createDefaultItem(String itemName) throws ItemAlreadyExists{
@@ -68,12 +70,20 @@ public class InventoryService {
         }
     }
 
-    public void sendRollbackSignal(String jsonString) {
-        redisService.sendMessageToChannel("InventoryToPayment", jsonString);
+    public void sendRollbackSignal(String jsonString) throws UnknownException{
+        try {
+            redisService.sendMessageToChannel("inventoryToPayment", jsonString);
+        } catch (Exception e) {
+            throw new UnknownException(e.getMessage());
+        }
     }
 
-    public void sendProgressSignal(String jsonString) {
-        redisService.sendMessageToChannel("InventoryToDelivery", jsonString);
+    public void sendProgressSignal(String jsonString) throws UnknownException{
+        try {
+            redisService.sendMessageToChannel("inventoryToDelivery", jsonString);
+        } catch (Exception e) {
+            throw new UnknownException(e.getMessage());
+        }
     }
 
 }
