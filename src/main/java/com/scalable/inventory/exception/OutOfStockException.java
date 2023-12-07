@@ -6,18 +6,18 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class InsufficientFundException extends RuntimeException {
+public class OutOfStockException extends RuntimeException {
     private String username;
     private String order_id;
     private String item_name;
     private long amount;
     private String message_response;
 
-    public InsufficientFundException() {
+    public OutOfStockException() {
         super();
     }
 
-    public InsufficientFundException(RollbackJSON parameters) {
+    public OutOfStockException(RollbackJSON parameters) {
         super();
         this.username = parameters.getUsername();
         this.order_id = parameters.getOrder_id();
@@ -26,11 +26,11 @@ public class InsufficientFundException extends RuntimeException {
         this.message_response = parameters.getMessage_response();
     }
 
-    public InsufficientFundException(String message) {
+    public OutOfStockException(String message) {
         super(message);
     }
 
-    public InsufficientFundException(String message, Throwable cause) {
+    public OutOfStockException(String message, Throwable cause) {
         super(message, cause);
     }
 }
