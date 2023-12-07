@@ -4,6 +4,7 @@ import com.scalable.inventory.model.Inventory;
 import com.scalable.inventory.service.InventoryService;
 import com.scalable.inventory.type.json.JSONBuilder;
 
+import com.scalable.inventory.type.json.ProgressJSON;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.slf4j.LoggerFactory;
@@ -44,7 +45,7 @@ public class InventoryController {
                     .addField("message_response", "SUCCESS");
 
         try {
-        inventoryService.sendProgressSignal(response.buildAsString());
+        inventoryService.sendProgressSignal(response.buildAsClass(ProgressJSON.class));
         } catch (Exception e) {
             e.printStackTrace();
         }

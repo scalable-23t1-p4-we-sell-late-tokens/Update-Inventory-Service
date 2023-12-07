@@ -35,13 +35,13 @@ public class RedisProgressChannel implements MessageListener {
             ProgressJSON json = (ProgressJSON) jsonMessageTypeFactory
                     .createMessage(payload, ProgressJSON.class);
 
-
             String username = json.getUsername();
             String orderID = json.getOrder_id();
             String itemName = json.getItem_name();
             long amount = json.getAmount();
             String messageFlag = json.getMessage_flag();
 
+            inventoryService.createNewItem(itemName, 100);
             inventoryService.orderItem(itemName, amount);
             messageProcessed = true;
 
@@ -62,7 +62,7 @@ public class RedisProgressChannel implements MessageListener {
                         .addField("amount", amount)
                         .addField("message_flag", messageFlag);
 
-            inventoryService.sendProgressSignal(response.buildAsString());
+            inventoryService.sendProgressSignal(response.buildAsClass(ProgressJSON.class));
             messageProcessed = false;
 
         } catch (ForceRollbackException forceRollbackException) {
@@ -77,30 +77,15 @@ public class RedisProgressChannel implements MessageListener {
                     .addField("amount", forceRollbackException.getAmount())
                     .addField("message_response", forceRollbackException.getMessage_response());
             try {
-                inventoryService.sendRollbackSignal(response.buildAsString());
+                inventoryService.sendRollbackSignal(response.buildAsClass(RollbackJSON.class));
                 System.out.println("Rollback complete");
             }
             catch (UnknownException unknownException) {
                 System.err.println("Failed to rollback: " + unknownException.getMessage());
             }
 
-        } catch (InsufficientFundException insufficientFundException) {
-            System.err.println("You don't got the cash: " + insufficientFundException.getMessage());
-            System.out.println("Beginning rollback process");
-            inventoryService.rollback(insufficientFundException.getItem_name(),
-                    insufficientFundException.getAmount());
-            JSONBuilder response = new JSONBuilder();
-            response.addField("username", insufficientFundException.getUsername())
-                    .addField("order_id", insufficientFundException.getOrder_id())
-                    .addField("amount", insufficientFundException.getAmount())
-                    .addField("message_response", insufficientFundException.getMessage_response());
-            try {
-                inventoryService.sendRollbackSignal(response.buildAsString());
-                System.out.println("Rollback complete");
-            }
-            catch (UnknownException unknownException) {
-                System.err.println("Failed to rollback " + unknownException.getMessage());
-            }
+        } catch (OutOfStockException outOfStockException) {
+            System.err.println("Not enough item on the stock to satisfy your need: " + outOfStockException.getMessage());
 
         } catch (ItemNotFoundException itemNotFoundException) {
             System.err.println("Item doesn't exist: " + itemNotFoundException.getMessage());
@@ -117,7 +102,7 @@ public class RedisProgressChannel implements MessageListener {
                     .addField("amount", timeOutException.getAmount())
                     .addField("message_response", timeOutException.getMessage_response());
                 try {
-                    inventoryService.sendRollbackSignal(response.buildAsString());
+                    inventoryService.sendRollbackSignal(response.buildAsClass(RollbackJSON.class));
                     System.out.println("Rollback complete");
                 }
                 catch (UnknownException unknownException) {
@@ -137,7 +122,7 @@ public class RedisProgressChannel implements MessageListener {
                     .addField("amount", unknownException.getAmount())
                     .addField("message_response", unknownException.getMessage_response());
                 try {
-                    inventoryService.sendRollbackSignal(response.buildAsString());
+                    inventoryService.sendRollbackSignal(response.buildAsClass(RollbackJSON.class));
                     System.out.println("Rollback complete");
                 }
                 catch (UnknownException unknownUnknownException) {
