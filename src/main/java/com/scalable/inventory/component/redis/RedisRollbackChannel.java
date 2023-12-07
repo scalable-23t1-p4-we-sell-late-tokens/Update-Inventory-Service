@@ -45,7 +45,7 @@ public class RedisRollbackChannel implements MessageListener {
                     .addField("amount", amount)
                     .addField("message_response", messageResponse);
 
-            inventoryService.sendRollbackSignal(response.buildAsString());
+            inventoryService.sendRollbackSignal(response.buildAsClass(RollbackJSON.class));
             System.out.println("Rollback complete");
 
 
