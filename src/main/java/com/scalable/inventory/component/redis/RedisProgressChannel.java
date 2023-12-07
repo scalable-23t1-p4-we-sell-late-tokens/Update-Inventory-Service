@@ -45,16 +45,22 @@ public class RedisProgressChannel implements MessageListener {
             inventoryService.orderItem(itemName, amount);
             messageProcessed = true;
 
-            JSONBuilder response = new JSONBuilder();
-            response.addField("username", username)
-                    .addField("order_id", orderID)
-                    .addField("item_name", itemName)
-                    .addField("amount", amount)
-                    .addField("message_response", messageFlag);
-
             if(messageFlag.equals("inventory")) {
+                JSONBuilder response = new JSONBuilder();
+                response.addField("username", username)
+                        .addField("order_id", orderID)
+                        .addField("item_name", itemName)
+                        .addField("amount", amount)
+                        .addField("message_response", null);
                 throw new ForceRollbackException(response.buildAsClass(RollbackJSON.class));
             }
+
+            JSONBuilder response = new JSONBuilder();
+                response.addField("username", username)
+                        .addField("order_id", orderID)
+                        .addField("item_name", itemName)
+                        .addField("amount", amount)
+                        .addField("message_flag", messageFlag);
 
             inventoryService.sendProgressSignal(response.buildAsString());
             messageProcessed = false;

@@ -2,6 +2,7 @@ package com.scalable.inventory.controller;
 import com.scalable.inventory.exception.ItemAlreadyExists;
 import com.scalable.inventory.model.Inventory;
 import com.scalable.inventory.service.InventoryService;
+import com.scalable.inventory.type.json.JSONBuilder;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -35,6 +36,19 @@ public class InventoryController {
         registry.counter("stockItem.total", "username", itemName).increment();
         LOG.info("Adding stock " + itemName + " to the inventory");
 
+        JSONBuilder response = new JSONBuilder();
+            response.addField("username", "Pong")
+                    .addField("order_id", "11213asgsb")
+                    .addField("item_name", "Token")
+                    .addField("amount", "1")
+                    .addField("message_response", "SUCCESS");
+
+        try {
+        inventoryService.sendProgressSignal(response.buildAsString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        
         return ResponseEntity.ok().build();
     }
 
