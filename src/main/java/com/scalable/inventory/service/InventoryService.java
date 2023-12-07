@@ -8,6 +8,11 @@ import com.scalable.inventory.type.json.JSONBuilder;
 import com.scalable.inventory.type.json.JSONMessageTypeFactory;
 import com.scalable.inventory.type.json.ProgressJSON;
 import com.scalable.inventory.type.json.RollbackJSON;
+
+import io.micrometer.core.instrument.MeterRegistry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +30,11 @@ public class InventoryService {
 
     @Autowired
     private RedisService redisService;
+
+    @Autowired
+    private MeterRegistry registry;
+
+    private final Logger LOG = LoggerFactory.getLogger(InventoryService.class);
 
     public void createDefaultItem(String itemName) {
         Optional<Inventory> entity = createInventoryRepository.findByItemName(itemName);
@@ -47,12 +57,13 @@ public class InventoryService {
     }
 
 
-    public void orderItem(String itemName, long amount) throws OutOfStockException, ItemNotFoundException {
+    public void orderItem(ProgressJSON json) throws OutOfStockException, ItemNotFoundException {
+        String itemName = json.getItem_name();
+        Long amount = json.getAmount();
         Inventory item = createInventoryRepository.findByItemName(itemName).orElse(null);
-
         if (item != null) {
             if (amount > item.getStock()) {
-                throw new OutOfStockException("Out of stock: { current stock: " + item.getStock() + ", amount requested: " + amount + " }\n");
+                throw new OutOfStockException(json);
             }
             item.setStock(item.getStock() - amount);
             createInventoryRepository.save(item);
@@ -81,6 +92,8 @@ public class InventoryService {
                     .addField("item_name", json.getItem_name())
                     .addField("message_response", json.getMessage_response());
             redisService.sendMessageToChannel("inventoryToPayment", response.buildAsString());
+            registry.counter("error.inventory.total").increment();
+            LOG.error("Error occured " + json.getMessage_response());
         } catch (Exception e) {
             throw new UnknownException(json);
         }
@@ -95,6 +108,8 @@ public class InventoryService {
                     .addField("item_name", json.getItem_name())
                     .addField("message_flag", json.getMessage_flag());
             redisService.sendMessageToChannel("inventoryToDelivery", response.buildAsString());
+            registry.counter("inventory.total").increment();
+            LOG.info(json.getAmount() + json.getItem_name() + " has been removed from inventory");
         } catch (Exception e) {
             throw new UnknownException(json);
         }

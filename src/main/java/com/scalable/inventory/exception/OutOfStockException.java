@@ -1,5 +1,6 @@
 package com.scalable.inventory.exception;
 
+import com.scalable.inventory.type.json.ProgressJSON;
 import com.scalable.inventory.type.json.RollbackJSON;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,13 +18,13 @@ public class OutOfStockException extends RuntimeException {
         super();
     }
 
-    public OutOfStockException(RollbackJSON parameters) {
+    public OutOfStockException(ProgressJSON parameters) {
         super();
         this.username = parameters.getUsername();
         this.order_id = parameters.getOrder_id();
         this.item_name = parameters.getItem_name();
         this.amount = parameters.getAmount();
-        this.message_response = parameters.getMessage_response();
+        this.message_response = null;
     }
 
     public OutOfStockException(String message) {

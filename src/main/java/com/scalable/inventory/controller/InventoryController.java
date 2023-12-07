@@ -1,5 +1,5 @@
 package com.scalable.inventory.controller;
-import com.scalable.inventory.exception.ItemAlreadyExists;
+
 import com.scalable.inventory.model.Inventory;
 import com.scalable.inventory.service.InventoryService;
 import com.scalable.inventory.type.json.JSONBuilder;
@@ -57,21 +57,6 @@ public class InventoryController {
     public ResponseEntity<String> createNewPayment(@PathVariable String itemName, @PathVariable long stock)
     {
         inventoryService.createNewItem(itemName, stock);
-        return ResponseEntity.ok().build();
-    }
-
-    @PostMapping("/order/{itemName}/{amount}")
-    public ResponseEntity<String> orderItem(@PathVariable String itemName, @PathVariable long amount)
-    {
-        try {
-            inventoryService.orderItem(itemName, amount);
-        } catch (ItemAlreadyExists itemNotFoundException) {
-            return ResponseEntity.internalServerError().body("Item not found");
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return ResponseEntity.internalServerError().body(e.getMessage());
-        }
-        inventoryService.createNewItem(itemName, amount);
         return ResponseEntity.ok().build();
     }
 
