@@ -1,5 +1,6 @@
 package com.scalable.inventory.exception;
 
+
 public class ItemNotFoundException extends RuntimeException{
     public ItemNotFoundException() {
         super();
