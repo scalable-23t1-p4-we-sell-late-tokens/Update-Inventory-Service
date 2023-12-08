@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.stereotype.Component;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 
 // TODO: Figure out and implement the timeout mechanism
 // TODO: Check whether message_response is appropriate
@@ -27,6 +28,7 @@ public class RedisProgressChannel implements MessageListener {
     }
 
     @Override
+    @WithSpan
     public void onMessage(Message message, byte[] pattern) {
         boolean messageProcessed = false;
         String payload = new String(message.getBody());
